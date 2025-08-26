@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALMA - Inteligență Empatică la Îndemână</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --primary: #6e44ff;
+            --secondary: #b892ff;
+            --accent: #ff44a7;
+            --accent2: #2de2e6;
+            --dark: #0a0a18;
+            --darker: #050510;
+            --light: #f0f0ff;
+            --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+            --gradient2: linear-gradient(135deg, var(--accent2), var(--primary));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Exo 2', sans-serif;
+        }
+        
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(110, 68, 255, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(184, 146, 255, 0.1), transparent 25%),
+                radial-gradient(circle at 50% 80%, rgba(255, 68, 167, 0.1), transparent 25%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(10, 10, 24, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(240, 240, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        nav.scrolled {
+            padding: 15px 0;
+            background-color: rgba(5, 5, 16, 0.95);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 32px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            max-width: 650px;
+            z-index: 2;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--light) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: var(--secondary);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: var(--gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 20px rgba(110, 68, 255, 0.3);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .cta-button:hover:before {
+            left: 100%;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(110, 68, 255, 0.4);
+        }
+        
+        .hero-visual {
+            position: absolute;
+            right: -50px;
+            bottom: 0;
+            width: 50%;
+            height: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .floating-device {
+            width: 300px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-device:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 4s infinite;
+        }
+        
+        .screen-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .pulse-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .pulse-circle:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            animation: pulse 2s infinite;
+            opacity: 0.6;
+            z-index: -1;
+        }
+        
+        .pulse-circle i {
+            font-size: 40px;
+            color: white;
+        }
+        
+        .device-stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+        
+        /* Sections */
+        section {
+            padding: 100px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--light) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient);
+            border-radius: 3px;
+        }
+        
+        /* Vision Section */
+        .vision-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--secondary);
+        }
+        
+        /* Capabilities Section */
+        .capabilities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .capability-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .capability-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+            background: rgba(110, 68, 255, 0.1);
+        }
+        
+        .capability-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(110, 68, 255, 0.1);
+        }
+        
+        .capability-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--light);
+        }
+        
+        .capability-desc {
+            color: var(--secondary);
+            line-height: 1.6;
+        }
+        
+        /* Applications Section */
+        .applications-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .application {
+            width: 280px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .application:hover {
+            background: rgba(110, 68, 255, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .application-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(110, 68, 255, 0.1);
+        }
+        
+        /* Technology Section */
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .tech-item {
+            width: 200px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .tech-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(110, 68, 255, 0.1);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            background: rgba(110, 68, 255, 0.1);
+            border-radius: 30px;
+            padding: 60px 40px;
+            margin: 50px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--light) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            padding: 60px 0 30px;
+            text-align: center;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links li {
+            margin: 0 15px;
+        }
+        
+        .footer-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--light);
+        }
+        
+        .copyright {
+            color: var(--secondary);
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        
+        /* Particles container */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            20% { transform: translateX(100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero-visual {
+                position: relative;
+                width: 100%;
+                right: 0;
+                margin-top: 50px;
+            }
+            
+            .hero {
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+                padding: 120px 0 50px;
+            }
+            
+            .hero-content {
+                max-width: 100%;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+            
+            .floating-device {
+                width: 250px;
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                ALMA
+            </div>
+            <ul class="nav-links">
+                <li><a href="#vision">Viziune</a></li>
+                <li><a href="#capabilities">Capabilități</a></li>
+                <li><a href="#applications">Aplicații</a></li>
+                <li><a href="#technology">Tehnologie</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Inteligență Empatică la Îndemână</h1>
+                <p>ALMA reprezintă un avanpost în tehnologia inteligenței emoționale - un companion vestibil care construiește poduri între emoțiile umane și înțelegerea tehnologică.</p>
+                <a href="#contact" class="cta-button">Să începem conversația</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-device">
+                <div class="screen-content">
+                    <div class="pulse-circle">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Stare emoțională: Calm</h3>
+                    <p>Nivel de stres: Scăzut</p>
+                    <div class="device-stats">
+                        <div class="stat">
+                            <div class="stat-value">92%</div>
+                            <div class="stat-label">Precizie</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">7ms</div>
+                            <div class="stat-label">Răspuns</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section id="vision">
+        <div class="container">
+            <h2 class="section-title">Viziunea Noastră</h2>
+            <div class="vision-content">
+                <p>ALMA este concepută să servească ca o extensie emoțională, creând o conexiune privată și non-invazivă între semnalele fiziologice și suportul personalizat. Reprezentăm o schimbare fundamentală în modul în care abordăm interacțiunea om-calculator.</p>
+                <p>Într-o lume din ce în ce mai dominată de interacțiunile digitale, ALMA reintroduce elementul uman critic al înțelegerii emoționale. Prin tehnologie care rezonează mai degrabă decât impune, creăm o nouă paradigmă în relația dintre oameni și tehnologie.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Capabilities Section -->
+    <section id="capabilities" style="background: rgba(10, 10, 24, 0.7);">
+        <div class="container">
+            <h2 class="section-title">Capabilități de Bază</h2>
+            <div class="capabilities-grid">
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-wave-square"></i>
+                    </div>
+                    <h3 class="capability-title">Recunoașterea Modelelor Emoționale</h3>
+                    <p class="capability-desc">Tehnologie sofisticată de sensing care recunoaște stări emoționale prin semnale biometrică cu precizie ridicată.</p>
+                </div>
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="capability-title">Învățare Personalizată</h3>
+                    <p class="capability-desc">Se adaptează la modelele emoționale individuale în timp prin protocolul nostru propriu de învățare.</p>
+                </div>
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="capability-title">Răspuns în Timp Real</h3>
+                    <p class="capability-desc">Oferă feedback personalizat imediat prin indicii haptice și audio subtile, adaptate nevoilor momentuale.</p>
+                </div>
+                <div class="capability-card">
+                    <div class="capability-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="capability-title">Design Orientat pe Confidențialitate</h3>
+                    <p class="capability-desc">Funcționează cu transmisie minimă de data și procesare locală pentru confidențialitate maximă.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Applications Section -->
+    <section id="applications">
+        <div class="container">
+            <h2 class="section-title">Aplicații și Versatilitate</h2>
+            <div class="applications-container">
+                <div class="application">
+                    <div class="application-icon">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <h3>Binestar Personal</h3>
+                    <p>Furnizează conștientizare emoțională și suport pentru reglarea emoțională în viața de zi cu zi.</p>
+                </div>
+                <div class="application">
+                    <div class="application-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Sănătate</h3>
+                    <p>Asistă persoanele cu anxietate, atac de panică și provocări de reglare emoțională.</p>
+                </div>
+                <div class="application">
+                    <div class="application-icon">
+                        <i class="fas fa-universal-access"></i>
+                    </div>
+                    <h3>Accesibilitate</h3>
+                    <p>Creează canale noi de comunicare pentru persoanele non-verbale.</p>
+                </div>
+                <div class="application">
+                    <div class="application-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Sprijin Familial</h3>
+                    <p>Ajută părinții să înțeleagă nevoile emoționale ale copiilor.</p>
+                </div>
+                <div class="application">
+                    <div class="application-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3>Mediu Profesional</h3>
+                    <p>Îmbunătățește inteligența emoțională în medii cu stres ridicat.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section id="technology" style="background: rgba(10, 10, 24, 0.7);">
+        <div class="container">
+            <h2 class="section-title">Abordarea Tehnologică</h2>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-satellite-dish"></i>
+                    </div>
+                    <h3>Fuziune Avansată de Senzori</h3>
+                    <p>Combină multiple intrări biometrică pentru o înțelegere completă a stării utilizatorului.</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-microchip"></i>
+                    </div>
+                    <h3>Procesare AI la Locul</h3>
+                    <p>Pentru confidențialitate și răspuns în timp real, cu minimizarea transmisiei de date.</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Codare Biosemiotică</h3>
+                    <p>Sistem propriu pentru clasificarea modelelor emoționale cu acuratețe ridicată.</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Arhitectură Modulară</h3>
+                    <p>Suportă multiple factori de formă și cazuri de utilizare pentru adaptabilitate maximă.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact">
+        <div class="container">
+            <div class="cta-section">
+                <h2>Gata să Facem Impact Împreună?</h2>
+                <p>Alătură-te revoluției în inteligența emoțională technologică</p>
+                <a href="#contact" class="cta-button">Contactează-ne pentru mai multe informații</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-logo">ALMA</div>
+            <p>Empathic Intelligence at Your Fingertips</p>
+            <ul class="footer-links">
+                <li><a href="#vision">Viziune</a></li>
+                <li><a href="#capabilities">Capabilități</a></li>
+                <li><a href="#applications">Aplicații</a></li>
+                <li><a href="#technology">Tehnologie</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <p class="copyright">© 2023 ALMA Technologies. Toate drepturile rezervate.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize particles.js
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: "#6e44ff"
+                    },
+                    shape: {
+                        type: "circle",
+                        stroke: {
+                            width: 0,
+                            color: "#000000"
+                        }
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 2,
+                            size_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#6e44ff",
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false,
+                        attract: {
+                            enable: false,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: "grab"
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: "push"
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        push: {
+                            particles_nb: 4
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+            
+            // Nav scroll effect
+            window.addEventListener('scroll', function() {
+                const nav = document.querySelector('nav');
+                if (window.scrollY > 50) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            });
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Animate elements on scroll
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.capability-card, .application, .tech-item');
+                
+                elements.forEach(element => {
+                    const position = element.getBoundingClientRect();
+                    
+                    // Checking if partially visible
+                    if(position.top < window.innerHeight - 100) {
+                        element.style.opacity = 1;
+                        element.style.transform = 'translateY(0)';
+                    }
+                });
+            };
+            
+            // Initialize animation styles
+            document.querySelectorAll('.capability-card, .application, .tech-item').forEach(element => {
+                element.style.opacity = 0;
+                element.style.transform = 'translateY(20px)';
+                element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            });
+            
+            // Listen for scroll events
+            window.addEventListener('scroll', animateOnScroll);
+            // Initial check
+            animateOnScroll();
+            
+            // Button hover effect
+            const ctaButton = document.querySelector('.cta-button');
+            
+            ctaButton.addEventListener('mouseover', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 15px 25px rgba(110, 68, 255, 0.4)';
+            });
+            
+            ctaButton.addEventListener('mouseout', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 10px 20px rgba(110, 68, 255, 0.3)';
+            });
+        });
+    </script>
+</body>
+</html>
